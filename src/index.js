@@ -57,7 +57,7 @@ let store = new Vuex.Store({
 
             }
 
-            state.sideBarButton = buttons;
+            state.topBarButton = buttons;
         }
     },
     actions: {
