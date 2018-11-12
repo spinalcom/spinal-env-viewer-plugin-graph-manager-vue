@@ -19,13 +19,15 @@ let store = new Vuex.Store({
     },
     getters: {},
     mutations: {
+        CHANGE_SELECTED_NODE: (state, node) => {
+            state.selectedNode = node;
+        },
         ADD_NODES: (state, nodes) => {
             state.nodes.push(...nodes);
         },
         CHANGE_SIDE_BAR: (state, option) => {
 
             const buttons = [];
-            console.log("change side bar", option);
             for (let i = 0; i < option.buttons.length; i++) {
                 let button = option.buttons[i];
                 console.log(button);
@@ -69,6 +71,7 @@ let store = new Vuex.Store({
                 .then(buttons => {
                     option.buttons = buttons;
                     context.commit("CHANGE_SIDE_BAR", option);
+                    context.commit("")
                 })
                 .catch(e => {
                     console.error(e);
@@ -79,6 +82,7 @@ let store = new Vuex.Store({
             spinalContextMenuService.getApps("GraphManagerGlobalBar", option)
                 .then(buttons => {
                     context.commit("SET_GLOBAL_BAR", buttons);
+                    context.commit("CHANGE_SELECTED_NODE", option)
                 })
                 .catch(e => {
                     console.error(e);
