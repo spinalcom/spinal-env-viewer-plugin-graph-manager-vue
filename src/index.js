@@ -23,9 +23,10 @@ let store = new Vuex.Store({
             state.nodes.push(...nodes);
         },
         CHANGE_SIDE_BAR: (state, option) => {
-            console.log("CHANGE SIDE BAR", option);
+
             const buttons = [];
             for (let i = 0; i < option.buttons.length; i++) {
+                console.log("CHANGE SIDE BAR", option.buttons[i]);
                 if (option.buttons[i].length > 0) {
                     let button = option.buttons[i];
                     for (let j = 0; j < button.length; j++) {
