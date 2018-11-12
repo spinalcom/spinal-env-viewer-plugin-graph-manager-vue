@@ -32,7 +32,6 @@
         methods:
             {
                 onNodeSelected: function (node) {
-                    console.log(this.sideBarButton);
                     this.$store.dispatch("onNodeSelected", node);
                 }
             }
