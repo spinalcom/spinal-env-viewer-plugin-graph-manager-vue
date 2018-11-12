@@ -28,11 +28,11 @@ let store = new Vuex.Store({
             for (let i = 0; i < option.buttons.length; i++) {
                 let button = option.buttons[i];
                 console.log(button);
-                if (typeof button.buttonCfg !== "undefined") {
-                    let butcfg = button[j].buttonCfg;
-                    butcfg.toolTip = button[j].label;
-                    butcfg.action = button[j].action;
-                    buttons.push({button: butcfg, badge_content: button[j].badgeCfg});
+                if (button.hasOwnProperty("buttonCfg")) {
+                    let butcfg = button.buttonCfg;
+                    butcfg.toolTip = button.label;
+                    butcfg.action = button.action;
+                    buttons.push({button: butcfg, badge_content: button.badgeCfg});
                 }
             }
 
@@ -43,19 +43,15 @@ let store = new Vuex.Store({
             console.log("set global bar ", bts);
             const buttons = [];
             for (let i = 0; i < bts.length; i++) {
-                if (bts[i].length > 0) {
-                    let button = bts[i];
-                    for (let j = 0; j < button.length; j++) {
-                        if (button[j].hasOwnProperty('buttonCfg')) {
-                            let butcfg = button[j].buttonCfg;
-                            butcfg.toolTip = button[j].label;
-                            butcfg.action = button[j].action;
-                            buttons.push({
-                                button: butcfg,
-                                badge_content: button[j].badgeCfg
-                            });
-                        }
-                    }
+                let button = bts[i];
+                if (button.hasOwnProperty('buttonCfg')) {
+                    let butcfg = button.buttonCfg;
+                    butcfg.toolTip = button.label;
+                    butcfg.action = button.action;
+                    buttons.push({
+                        button: butcfg,
+                        badge_content: button.badgeCfg
+                    });
                 }
 
             }
