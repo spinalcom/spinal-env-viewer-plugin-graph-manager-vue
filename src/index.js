@@ -27,7 +27,8 @@ let store = new Vuex.Store({
             const buttons = [];
             for (let i = 0; i < option.buttons.length; i++) {
                 let button = option.buttons[i];
-                if (typeof button[j].buttonCfg !== "undefined") {
+                console.log(button);
+                if (typeof button.buttonCfg !== "undefined") {
                     let butcfg = button[j].buttonCfg;
                     butcfg.toolTip = button[j].label;
                     butcfg.action = button[j].action;
