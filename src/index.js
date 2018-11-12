@@ -27,16 +27,12 @@ let store = new Vuex.Store({
             const buttons = [];
             for (let i = 0; i < option.buttons.length; i++) {
                 let button = option.buttons[i];
-                for (let j = 0; j < button.length; j++) {
-                    if (typeof button[j].buttonCfg !== "undefined") {
-                        let butcfg = button[j].buttonCfg;
-                        butcfg.toolTip = button[j].label;
-                        butcfg.action = button[j].action;
-                        buttons.push({button: butcfg, badge_content: button[j].badgeCfg});
-                    }
-
+                if (typeof button[j].buttonCfg !== "undefined") {
+                    let butcfg = button[j].buttonCfg;
+                    butcfg.toolTip = button[j].label;
+                    butcfg.action = button[j].action;
+                    buttons.push({button: butcfg, badge_content: button[j].badgeCfg});
                 }
-
             }
 
             state.sideBarButton = buttons;
