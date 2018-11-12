@@ -42,30 +42,52 @@ let store = new Vuex.Store({
             state.sideBarButton = buttons;
             state.selectedNode = option.selectedNode;
         },
+        SET_GLOBAL_BAR: (state, bts) => {
+            const buttons = [];
+            for (let i = 0; i < bts.length; i++) {
+                if (bts[i].length > 0) {
+                    let button = bts[i];
+                    for (let j = 0; j < button.length; j++) {
+                        if ( button[j].hasOwnProperty('buttonCfg')) {
+                            let butcfg = button[j].buttonCfg;
+                            butcfg.toolTip = button[j].label;
+                            butcfg.action = button[j].action;
+                            buttons.push({
+                                button: butcfg,
+                                badge_content: button[j].badgeCfg
+                            });
+                        }
+                    }
+                }
+
+            }
+
+            state.sideBarButton = buttons;
+        }
     },
     actions: {
         addNodes(context, nodes) {
             context.commit("ADD_NODES", nodes)
         },
-        setSelectedNode(context, option) {
-
-            const promises = [];
-
-
-            if (option.selectedNode.info.hasOwnProperty("hooks"))
-                for (let i = 0; i < option.selectedNode.info.hooks.length; i++) {
-                    promises.push(spinalContextMenuService.getApps(option.selectedNode.info.hooks[i], option))
-                }
-
-            Promise
-                .all(promises)
-                .then(buttons => {
+        onNodeSelected(context, option) {
+            spinalContextMenuService.getApps("GraphManagerSideBar", option)
+                .then( buttons => {
                     option.buttons = buttons;
                     context.commit("CHANGE_SIDE_BAR", option);
                 })
                 .catch(e => {
                     console.error(e);
                 });
+        },
+
+        retrieveGlobalBar(context, option){
+            spinalContextMenuService.getApps("GraphManagerGlobalBar", option)
+                .then(buttons => {
+                    context.commit("SET_GLOBAL_BAR", buttons);
+                })
+                .catch(e => {
+                console.error(e);
+            });
         }
     }
 });
