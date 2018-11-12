@@ -45,6 +45,7 @@ let store = new Vuex.Store({
             state.selectedNode = option.selectedNode;
         },
         SET_GLOBAL_BAR: (state, bts) => {
+            console.log("set global bar ", bts);
             const buttons = [];
             for (let i = 0; i < bts.length; i++) {
                 if (bts[i].length > 0) {
@@ -74,7 +75,6 @@ let store = new Vuex.Store({
         onNodeSelected(context, option) {
             spinalContextMenuService.getApps("GraphManagerSideBar", option)
                 .then( buttons => {
-                    console.log("on Node selected button", buttons);
                     option.buttons = buttons;
                     context.commit("CHANGE_SIDE_BAR", option);
                 })
@@ -84,7 +84,6 @@ let store = new Vuex.Store({
         },
 
         retrieveGlobalBar(context, option){
-            console.log("retrive global", option);
             spinalContextMenuService.getApps("GraphManagerGlobalBar", option)
                 .then(buttons => {
                     context.commit("SET_GLOBAL_BAR", buttons);
