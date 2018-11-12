@@ -1,12 +1,11 @@
 <template>
-    <div id="app">
-        <div>
-            <top-bar :buttons="topBarButton"/>
-        </div>
-        <div id="graph_body">
-            <side-bar :buttons="sideBarButton" :option="selectedNode"/>
-            <nodes-list @node-selected="onNodeSelected($event)" :nodes="nodes"/>
-        </div>
+    <div id="graph-manager">
+
+        <top-bar :buttons="topBarButton"/>
+    <div class="graph-manager-body">
+        <side-bar :buttons="sideBarButton" :option="selectedNode"/>
+        <nodes-list @node-selected="onNodeSelected($event)" :nodes="nodes"/>
+    </div>
     </div>
 </template>
 
