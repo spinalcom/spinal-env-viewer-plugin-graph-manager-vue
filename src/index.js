@@ -23,6 +23,7 @@ let store = new Vuex.Store({
             state.nodes.push(...nodes);
         },
         CHANGE_SIDE_BAR: (state, option) => {
+            console.log("CHANGE SIDE BAR", option);
             const buttons = [];
             for (let i = 0; i < option.buttons.length; i++) {
                 if (option.buttons[i].length > 0) {
@@ -70,9 +71,9 @@ let store = new Vuex.Store({
             context.commit("ADD_NODES", nodes)
         },
         onNodeSelected(context, option) {
-            console.log("node onNodeSelected", option);
             spinalContextMenuService.getApps("GraphManagerSideBar", option)
                 .then( buttons => {
+                    console.log("on Node selected button", buttons);
                     option.buttons = buttons;
                     context.commit("CHANGE_SIDE_BAR", option);
                 })
