@@ -26,17 +26,15 @@ let store = new Vuex.Store({
 
             const buttons = [];
             for (let i = 0; i < option.buttons.length; i++) {
-                console.log("CHANGE SIDE BAR", option.buttons[i]);
-                if (option.buttons[i].length > 0) {
-                    let button = option.buttons[i];
-                    for (let j = 0; j < button.length; j++) {
-                        if (typeof button[j].buttonCfg !== "undefined") {
-                            let butcfg =button[j].buttonCfg;
-                            butcfg.toolTip = button[j].label;
-                            butcfg.action = button[j].action;
-                            buttons.push({button: butcfg, badge_content: button[j].badgeCfg});
-                        }
+                let button = option.buttons[i];
+                for (let j = 0; j < button.length; j++) {
+                    if (typeof button[j].buttonCfg !== "undefined") {
+                        let butcfg = button[j].buttonCfg;
+                        butcfg.toolTip = button[j].label;
+                        butcfg.action = button[j].action;
+                        buttons.push({button: butcfg, badge_content: button[j].badgeCfg});
                     }
+
                 }
 
             }
@@ -51,7 +49,7 @@ let store = new Vuex.Store({
                 if (bts[i].length > 0) {
                     let button = bts[i];
                     for (let j = 0; j < button.length; j++) {
-                        if ( button[j].hasOwnProperty('buttonCfg')) {
+                        if (button[j].hasOwnProperty('buttonCfg')) {
                             let butcfg = button[j].buttonCfg;
                             butcfg.toolTip = button[j].label;
                             butcfg.action = button[j].action;
@@ -74,7 +72,7 @@ let store = new Vuex.Store({
         },
         onNodeSelected(context, option) {
             spinalContextMenuService.getApps("GraphManagerSideBar", option)
-                .then( buttons => {
+                .then(buttons => {
                     option.buttons = buttons;
                     context.commit("CHANGE_SIDE_BAR", option);
                 })
@@ -83,24 +81,26 @@ let store = new Vuex.Store({
                 });
         },
 
-        retrieveGlobalBar(context, option){
+        retrieveGlobalBar(context, option) {
             spinalContextMenuService.getApps("GraphManagerGlobalBar", option)
                 .then(buttons => {
                     context.commit("SET_GLOBAL_BAR", buttons);
                 })
                 .catch(e => {
-                console.error(e);
-            });
+                    console.error(e);
+                });
         }
     }
 });
 
-function badgeCfg2badgeContent(badgeCfg){
+function badgeCfg2badgeContent(badgeCfg) {
 
 }
-function buttonCfg2button(buttonCfg){
+
+function buttonCfg2button(buttonCfg) {
 
 }
+
 let component = new Vue({
     render: h => h(App),
     store
