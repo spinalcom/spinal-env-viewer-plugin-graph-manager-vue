@@ -70,6 +70,7 @@ let store = new Vuex.Store({
             context.commit("ADD_NODES", nodes)
         },
         onNodeSelected(context, option) {
+            console.log("node onNodeSelected", option);
             spinalContextMenuService.getApps("GraphManagerSideBar", option)
                 .then( buttons => {
                     option.buttons = buttons;
