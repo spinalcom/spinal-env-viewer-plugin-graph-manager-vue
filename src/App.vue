@@ -1,5 +1,5 @@
 <template>
-    <div id="graph-manager">
+    <div class="plugin-graph-viewer">
 
         <top-bar :buttons="topBarButton"/>
     <div class="graph-manager-body">
@@ -40,7 +40,11 @@
 </script>
 
 <style scoped>
-    #graph-manager-body {
+    .plugin-graph-viewer{
+        height: 100%;
+    }
+    .graph-manager-body {
         display: flex;
+        height: 100%;
     }
 </style>
