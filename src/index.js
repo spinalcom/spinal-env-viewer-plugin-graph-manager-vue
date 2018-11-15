@@ -83,11 +83,11 @@ let store = new Vuex.Store({
         },
 
         retrieveGlobalBar(context, graph) {
-            context.commit("SET_GRAPH", graph);
-            spinalContextMenuService.getApps("GraphManagerGlobalBar", option)
+            spinalContextMenuService.getApps("GraphManagerGlobalBar", graph)
                 .then(buttons => {
                     context.commit("SET_GLOBAL_BAR", buttons);
-                    context.commit("CHANGE_SELECTED_NODE", option)
+                    context.commit("CHANGE_SELECTED_NODE", graph);
+                    context.commit("SET_GRAPH", graph);
                 })
                 .catch(e => {
                     console.error(e);
