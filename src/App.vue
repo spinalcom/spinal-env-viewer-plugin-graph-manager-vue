@@ -1,7 +1,10 @@
 <template>
     <div class="plugin-graph-viewer">
 
-        <top-bar :buttons="topBarButton"/>
+        <top-bar
+                :buttons="topBarButton"
+                :option="graph"
+        />
     <div class="graph-manager-body">
         <side-bar :buttons="sideBarButton" :option="selectedNode"/>
         <nodes-list @node-selected="onNodeSelected($event)" :nodes="nodes"/>
@@ -26,7 +29,8 @@
             'topBarButton',
             'sideBarButton',
             'nodes',
-            'selectedNode'
+            'selectedNode',
+            'graph'
         ]),
         methods:
             {

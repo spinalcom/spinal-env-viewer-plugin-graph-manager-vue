@@ -15,7 +15,9 @@ let store = new Vuex.Store({
         topBarButton: [],
         sideBarButton: [],
         nodes: [],
-        selectedNode: {}
+        selectedNode: {},
+        graph: {}
+
     },
     getters: {},
     mutations: {
@@ -59,8 +61,11 @@ let store = new Vuex.Store({
             }
 
             state.topBarButton = buttons;
-        }
-    },
+        },
+        SET_GRAPH: (state, graph) => {
+            state.graph = graph
+
+        }    },
     actions: {
         addNodes(context, nodes) {
             context.commit("ADD_NODES", nodes)
@@ -78,6 +83,7 @@ let store = new Vuex.Store({
         },
 
         retrieveGlobalBar(context, option) {
+            context.commit("SET_GRAPH", graph);
             spinalContextMenuService.getApps("GraphManagerGlobalBar", option)
                 .then(buttons => {
                     context.commit("SET_GLOBAL_BAR", buttons);
