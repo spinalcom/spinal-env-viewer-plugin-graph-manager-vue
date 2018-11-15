@@ -82,7 +82,7 @@ let store = new Vuex.Store({
                 });
         },
 
-        retrieveGlobalBar(context, option) {
+        retrieveGlobalBar(context, graph) {
             context.commit("SET_GRAPH", graph);
             spinalContextMenuService.getApps("GraphManagerGlobalBar", option)
                 .then(buttons => {
