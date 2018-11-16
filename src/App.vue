@@ -1,14 +1,19 @@
 <template>
     <div class="plugin-graph-viewer">
 
-        <top-bar
-                :buttons="topBarButton"
-                :option="graph"
-        />
-    <div class="graph-manager-body">
-        <side-bar :buttons="sideBarButton" :option="selectedNode"/>
-        <nodes-list @node-selected="onNodeSelected($event)" :nodes="nodes"/>
-    </div>
+        <top-bar :buttons="topBarButton"/>
+        <div class="graph-manager-body">
+            <side-bar
+                    :buttons="sideBarButton"
+                    :option="selectedNode"
+            />
+            <nodes-list
+                    @node-selected="onNodeSelected($event)"
+                    @hide-bim-object="onHideBimObject($event)"
+                    @pull-node="onPullNode($event)"
+                    :nodes="nodes"
+                    :context-ids="contextIds"/>
+        </div>
     </div>
 </template>
 
@@ -30,25 +35,39 @@
             'sideBarButton',
             'nodes',
             'selectedNode',
-            'graph'
+            'contextIds'
         ]),
-        methods:
-            {
-                onNodeSelected: function (node) {
-                    this.$store.dispatch("onNodeSelected", node);
-                }
-            }
 
+        methods: {
+            onHideBimObject: function (event){
+                console.log("hide bim obj event", event)
+            },
+            onNodeSelected: function (event) {
+                this.$store.dispatch("onNodeSelected", event)
+                    .then()
+                    .catch(e => console.error(e))
+                ;
+            },
+            onPullNode: function (event) {
+                this.$store.commit("PULL_NODE", event);
+            }
+        }
     }
 
 </script>
 
-<style scoped>
-    .plugin-graph-viewer{
+<style >
+    .plugin-graph-viewer * {
+        box-sizing: border-box
+    }
+
+    .plugin-graph-viewer {
         height: 100%;
     }
+
     .graph-manager-body {
         display: flex;
         height: 100%;
+        width: 100%;
     }
 </style>

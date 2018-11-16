@@ -14,25 +14,33 @@ let store = new Vuex.Store({
     state: {
         topBarButton: [],
         sideBarButton: [],
-        nodes: [],
+        contextIds: [],
+        nodes: {},
         selectedNode: {},
-        graph: {}
-
+        pollingQueue: []
     },
-    getters: {},
     mutations: {
         CHANGE_SELECTED_NODE: (state, node) => {
             state.selectedNode = node;
         },
+        ADD_CONTEXTS: (state, contexts) => {
+            for (let i = 0; i < contexts.length; i++) {
+                state.contextIds.push(contexts[i].info.id.get());
+                if (!state.nodes.hasOwnProperty(contexts[i].info.id.get())){
+                    state.nodes[contexts[i].info.id.get()] = contexts[i];
+                }
+            }
+        },
         ADD_NODES: (state, nodes) => {
-            state.nodes.push(...nodes);
+            for (let i = 0; i < nodes.length; i++) {
+                state.nodes[nodes[i].info.id.get()] = nodes[i];
+            }
         },
         CHANGE_SIDE_BAR: (state, buttons) => {
 
             const res = [];
             for (let i = 0; i < buttons.length; i++) {
                 let button = buttons[i];
-                console.log(button);
                 if (button.hasOwnProperty("buttonCfg")) {
                     let butcfg = button.buttonCfg;
                     butcfg.toolTip = button.label;
@@ -44,7 +52,6 @@ let store = new Vuex.Store({
             state.sideBarButton = res;
         },
         SET_GLOBAL_BAR: (state, bts) => {
-            console.log("set global bar ", bts);
             const buttons = [];
             for (let i = 0; i < bts.length; i++) {
                 let button = bts[i];
@@ -62,18 +69,23 @@ let store = new Vuex.Store({
 
             state.topBarButton = buttons;
         },
-        SET_GRAPH: (state, graph) => {
-            state.graph = graph
-
-        }    },
+        PULL_NODE: (state, nodeId) => {
+            state.pollingQueue.push(nodeId);
+        }
+    },
     actions: {
         addNodes(context, nodes) {
             context.commit("ADD_NODES", nodes)
         },
-        onNodeSelected(context, option) {
+        addContexts(context, contexts){
+            context.commit("ADD_CONTEXTS", contexts);
+        },
+        onNodeSelected(context, ids) {
+            const option = {};
+            option['selectedNode'] = context.state.nodes[ids[0]];
+            option['context'] = context.state.nodes[ids[ids.length - 1]];
             spinalContextMenuService.getApps("GraphManagerSideBar", option)
                 .then(buttons => {
-                    option.buttons = buttons;
                     context.commit("CHANGE_SIDE_BAR", buttons);
                     context.commit("CHANGE_SELECTED_NODE", option)
                 })
@@ -81,13 +93,11 @@ let store = new Vuex.Store({
                     console.error(e);
                 });
         },
-
-        retrieveGlobalBar(context, graph) {
-            spinalContextMenuService.getApps("GraphManagerGlobalBar", graph)
+        retrieveGlobalBar(context, option) {
+            spinalContextMenuService.getApps("GraphManagerGlobalBar", option)
                 .then(buttons => {
                     context.commit("SET_GLOBAL_BAR", buttons);
-                    context.commit("CHANGE_SELECTED_NODE", graph);
-                    context.commit("SET_GRAPH", graph);
+                    context.commit("CHANGE_SELECTED_NODE", option)
                 })
                 .catch(e => {
                     console.error(e);
@@ -96,16 +106,20 @@ let store = new Vuex.Store({
     }
 });
 
-function badgeCfg2badgeContent(badgeCfg) {
 
-}
-
-function buttonCfg2button(buttonCfg) {
-
-}
-
-let component = new Vue({
+let component =  Vue.extend({
     render: h => h(App),
+    methods: {
+        opened: function (a, b) {
+
+        },
+        closed: function (a, b) {
+
+        },
+        removed: function (a, b) {
+
+        }
+    },
     store
 });
 export default {
