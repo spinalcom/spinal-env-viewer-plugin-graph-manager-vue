@@ -17,7 +17,8 @@ let store = new Vuex.Store({
         contextIds: [],
         nodes: {},
         selectedNode: {},
-        pollingQueue: []
+        pollingQueue: [],
+        graph: {}
     },
     mutations: {
         CHANGE_SELECTED_NODE: (state, node) => {
@@ -26,7 +27,7 @@ let store = new Vuex.Store({
         ADD_CONTEXTS: (state, contexts) => {
             for (let i = 0; i < contexts.length; i++) {
                 state.contextIds.push(contexts[i].info.id.get());
-                if (!state.nodes.hasOwnProperty(contexts[i].info.id.get())){
+                if (!state.nodes.hasOwnProperty(contexts[i].info.id.get())) {
                     state.nodes[contexts[i].info.id.get()] = contexts[i];
                 }
             }
@@ -71,13 +72,16 @@ let store = new Vuex.Store({
         },
         PULL_NODE: (state, nodeId) => {
             state.pollingQueue.push(nodeId);
+        },
+        SET_GRAPH: (state, graph) => {
+            state.graph = graph;
         }
     },
     actions: {
         addNodes(context, nodes) {
             context.commit("ADD_NODES", nodes)
         },
-        addContexts(context, contexts){
+        addContexts(context, contexts) {
             context.commit("ADD_CONTEXTS", contexts);
         },
         onNodeSelected(context, ids) {
@@ -102,12 +106,15 @@ let store = new Vuex.Store({
                 .catch(e => {
                     console.error(e);
                 });
+        },
+        setGraph(context, graph) {
+            context.commit("SET_GRAPH", graph);
         }
     }
 });
 
 
-let component =  Vue.extend({
+let component = Vue.extend({
     render: h => h(App),
     methods: {
         opened: function (a, b) {

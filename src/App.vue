@@ -1,7 +1,10 @@
 <template>
     <div class="plugin-graph-viewer">
 
-        <top-bar :buttons="topBarButton"/>
+        <top-bar :buttons="topBarButton"
+                 :option="graph"
+        />
+
         <div class="graph-manager-body">
             <side-bar
                     :buttons="sideBarButton"
@@ -35,7 +38,8 @@
             'sideBarButton',
             'nodes',
             'selectedNode',
-            'contextIds'
+            'contextIds',
+            'graph'
         ]),
 
         methods: {
@@ -57,6 +61,7 @@
 </script>
 
 <style >
+
     .plugin-graph-viewer * {
         box-sizing: border-box
     }
@@ -65,6 +70,17 @@
         height: 100%;
     }
 
+    .plugin-graph-viewer:hover{
+        height: 100% ;
+    }
+
+    .docking-panel:hover * {
+        background: #0d69ca;
+    }
+
+    .docking-panel * {
+        background: #ff191c;
+    }
     .graph-manager-body {
         display: flex;
         height: 100%;
