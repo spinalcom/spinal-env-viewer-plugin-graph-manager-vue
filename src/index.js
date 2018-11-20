@@ -23,6 +23,7 @@ let store = new Vuex.Store({
     mutations: {
         CHANGE_SELECTED_NODE: (state, node) => {
             state.selectedNode = node;
+            state.selectedNode.graph = state.graph;
         },
         ADD_CONTEXTS: (state, contexts) => {
             for (let i = 0; i < contexts.length; i++) {
@@ -70,11 +71,15 @@ let store = new Vuex.Store({
 
             state.topBarButton = buttons;
         },
-        PULL_NODE: (state, nodeId) => {
+        PULL_CHILDREN: (state, nodeId) => {
             state.pollingQueue.push(nodeId);
         },
         SET_GRAPH: (state, graph) => {
             state.graph = graph;
+        },
+        EMPTY_POLL: (state, id) => {
+            const index = state.pollingQueue.indexOf(id);
+            state.pollingQueue.splice(index, 1);
         }
     },
     actions: {
@@ -109,6 +114,9 @@ let store = new Vuex.Store({
         },
         setGraph(context, graph) {
             context.commit("SET_GRAPH", graph);
+        },
+        emptyPoll(context, id){
+            context.commit("EMPTY_POLL", id);
         }
     }
 });
