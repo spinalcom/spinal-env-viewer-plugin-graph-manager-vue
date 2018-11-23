@@ -7,7 +7,7 @@
         />
 
         <div class="graph-manager-body">
-            <side-bar
+            <side-bar class="graph-manager-side-bar"
                     :buttons="sideBarButton"
                     :option="selectedNode"
             />
@@ -63,8 +63,12 @@
 
 <style >
 
+
+    .plugin-graph-viewer{
+        height: 100%;
+    }
     .plugin-graph-viewer * {
-        box-sizing: border-box
+        box-sizing: border-box;
     }
 
     .graph-viewer {
@@ -72,7 +76,12 @@
     }
 
     .graph-manager-top-bar{
+        background-color: rgba(52, 52, 52, 0.85);
+        border-bottom: 1px solid rgba(128, 128, 128, 0.64);
+    }
 
+    .graph-manager-side-bar{
+        background-color: rgba(52, 52, 52, 0.85);
         border-bottom: 1px solid rgba(128, 128, 128, 0.64);
     }
 

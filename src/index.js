@@ -83,12 +83,15 @@ let store = new Vuex.Store({
         }
     },
     actions: {
+
         addNodes(context, nodes) {
             context.commit("ADD_NODES", nodes)
         },
+
         addContexts(context, contexts) {
             context.commit("ADD_CONTEXTS", contexts);
         },
+
         onNodeSelected(context, ids) {
             const option = {};
             option['selectedNode'] = context.state.nodes[ids[0]];
@@ -102,8 +105,9 @@ let store = new Vuex.Store({
                     console.error(e);
                 });
         },
+
         retrieveGlobalBar(context, option) {
-            spinalContextMenuService.getApps("GraphManagerGlobalBar", option)
+            spinalContextMenuService.getApps("GraphManagerTopBar", option)
                 .then(buttons => {
                     context.commit("SET_GLOBAL_BAR", buttons);
                     context.commit("CHANGE_SELECTED_NODE", option)
@@ -112,13 +116,16 @@ let store = new Vuex.Store({
                     console.error(e);
                 });
         },
+
         setGraph(context, graph) {
             context.commit("SET_GRAPH", graph);
         },
+
         emptyPoll(context, id){
             context.commit("EMPTY_POLL", id);
         }
     }
+
 });
 
 
@@ -132,7 +139,6 @@ let component = Vue.extend({
 
         },
         removed: function (a, b) {
-
         }
     },
     store
