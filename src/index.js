@@ -30,6 +30,7 @@ let store = new Vuex.Store({
                 state.contextIds.push(contexts[i].info.id.get());
                 if (!state.nodes.hasOwnProperty(contexts[i].info.id.get())) {
                     state.nodes[contexts[i].info.id.get()] = contexts[i];
+
                 }
             }
         },
