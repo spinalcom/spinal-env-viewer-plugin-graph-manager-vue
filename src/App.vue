@@ -23,15 +23,15 @@
 
 <script>
 
-    import Components from "spinal-env-viewer-vue-components-lib";
+    import {SideBar, TopBar, NodeList} from "spinal-env-viewer-vue-components-lib";
     import {mapState} from 'vuex'
 
     export default {
         name: 'graph-manager',
         components: {
-            sideBar: Components.ToolsBar.SideBar,
-            TopBar: Components.ToolsBar.TopBar,
-            NodesList: Components.Nodes.NodeList
+            sideBar: SideBar,
+            TopBar: TopBar,
+            NodesList: NodeList
         },
 
         computed: mapState([

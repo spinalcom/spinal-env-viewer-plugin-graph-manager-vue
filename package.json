@@ -9,7 +9,7 @@
     "babel-preset-env": "^1.7.0",
     "material-design-icons": "^3.0.1",
     "spinal-env-viewer-context-menu-service": "git+https://github.com/spinalcom/spinal-env-viewer-context-menu-service.git",
-    "spinal-env-viewer-vue-components-lib": "git+https://github.com/spinalcom/spinal-env-viewer-vue-components-lib.git",
+    "spinal-env-viewer-vue-components-lib":"git+https://github.com/spinalcom/spinal-env-viewer-vue-components-lib.git#v04",
     "vue": "^2.5.17",
     "vue-material": "^1.0.0-beta-10.2",
     "vuex": "^3.0.1"
