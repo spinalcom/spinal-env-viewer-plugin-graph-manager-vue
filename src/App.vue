@@ -62,15 +62,6 @@
             onPullNode: function (event) {
                 this.$store.commit("PULL_CHILDREN", event);
             }
-        },
-
-        watch: {
-            childrenIds: {
-                handler: function () {
-                    console.log("childrenIDs updated")
-                },
-                immediate: true
-            }
         }
     }
 
