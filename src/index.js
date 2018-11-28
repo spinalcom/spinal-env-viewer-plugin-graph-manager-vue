@@ -15,30 +15,21 @@ let store = new Vuex.Store({
         topBarButton: [],
         sideBarButton: [],
         contextIds: [],
-        nodes: {},
+        nodes: {hasbeen: false},
         selectedNode: {},
         pollingQueue: [],
-        graph: {}
+        graph: {},
+        childrenIds: [],
+        binders: {}
     },
+
     mutations: {
+
         CHANGE_SELECTED_NODE: (state, node) => {
             state.selectedNode = node;
             state.selectedNode.graph = state.graph;
         },
-        ADD_CONTEXTS: (state, contexts) => {
-            for (let i = 0; i < contexts.length; i++) {
-                state.contextIds.push(contexts[i].info.id.get());
-                if (!state.nodes.hasOwnProperty(contexts[i].info.id.get())) {
-                    state.nodes[contexts[i].info.id.get()] = contexts[i];
 
-                }
-            }
-        },
-        ADD_NODES: (state, nodes) => {
-            for (let i = 0; i < nodes.length; i++) {
-                state.nodes[nodes[i].info.id.get()] = nodes[i];
-            }
-        },
         CHANGE_SIDE_BAR: (state, buttons) => {
 
             const res = [];
@@ -54,6 +45,63 @@ let store = new Vuex.Store({
 
             state.sideBarButton = res;
         },
+
+        PULL_CHILDREN: (state, nodeId) => {
+            state.pollingQueue.push(nodeId);
+        },
+
+        EMPTY_POLL: (state, id) => {
+            const index = state.pollingQueue.indexOf(id);
+            state.pollingQueue.splice(index, 1);
+        },
+
+
+        ADD_CONTEXTS: (state, contexts) => {
+            for (let i = 0; i < contexts.length; i++) {
+                const contextId = contexts[i].info.id.get();
+
+                if (!state.contextIds.includes(contextId))
+                    state.contextIds.push(contextId);
+                if (!state.nodes.hasOwnProperty(contextId)) {
+                    state.nodes[contextId] = contexts[i];
+                }
+
+                state.nodes.hasbeen = !state.nodes.hasbeen;
+            }
+        },
+
+        ADD_NODE: (state, node) => {
+            const nodeId = node.info.id.get();
+          if (!state.nodes.hasOwnProperty(nodeId)){
+              state.nodes[nodeId] = node;
+                state.childrenIds.push(nodeId);
+          }
+            state.nodes.hasbeen = !state.nodes.hasbeen;
+
+        },
+
+        ADD_NODES: (state, nodes) => {
+            const nodeId = nodes[i].info.id.get();
+            for (let i = 0; i < nodes.length; i++) {
+                if (!state.nodes.hasOwnProperty(nodeId)){
+                    state.nodes = nodes[i];
+                    state.childrenIds.push(nodeId);
+                }
+            }
+
+            state.nodes.hasbeen = !state.nodes.hasbeen;
+
+        },
+
+        BIND_NODE: (state, nodeId, binder) => {
+            if (state.nodes.hasOwnProperty(nodeId))
+                state.binders[nodeId] = binder;
+        },
+
+        SET_CHILDREN_IDS: (state, id) => {
+
+        },
+
         SET_GLOBAL_BAR: (state, bts) => {
             const buttons = [];
             for (let i = 0; i < bts.length; i++) {
@@ -67,29 +115,43 @@ let store = new Vuex.Store({
                         badge_content: button.badgeCfg
                     });
                 }
-
             }
 
             state.topBarButton = buttons;
         },
-        PULL_CHILDREN: (state, nodeId) => {
-            state.pollingQueue.push(nodeId);
-        },
+
         SET_GRAPH: (state, graph) => {
             state.graph = graph;
         },
-        EMPTY_POLL: (state, id) => {
-            const index = state.pollingQueue.indexOf(id);
-            state.pollingQueue.splice(index, 1);
-        }
+
     },
+
     actions: {
 
         addNodes(context, nodes) {
-            context.commit("ADD_NODES", nodes)
+            for (let i = 0; i < nodes.length; i++) {
+                const nodeId = nodes[i].info.id.get();
+                const node = nodes[i];
+                if (!context.state.nodes.hasOwnProperty(nodeId))
+                    context.commit('ADD_NODE', node);
+
+                if (!context.state.binders.hasOwnProperty(nodeId)){
+                    const binder = node.bind(watchNode.bind(this,context, nodeId));
+                    context.commit('BIND_NODE', nodeId, binder);
+                }
+            }
         },
 
         addContexts(context, contexts) {
+            for (let i = 0; i < contexts.length; i++) {
+                const nodeId = contexts[i].info.id.get();
+                const node = contexts[i];
+                if (!context.state.binders.hasOwnProperty(nodeId)) {
+                    const binder = node.bind(watchNode.bind(this,context, nodeId));
+                    context.commit('BIND_NODE', nodeId, binder);
+                }
+            }
+
             context.commit("ADD_CONTEXTS", contexts);
         },
 
@@ -122,13 +184,16 @@ let store = new Vuex.Store({
             context.commit("SET_GRAPH", graph);
         },
 
-        emptyPoll(context, id){
+        emptyPoll(context, id) {
             context.commit("EMPTY_POLL", id);
         }
-    }
+    },
 
 });
 
+function watchNode(context, nodeId) {
+    context.commit('PULL_CHILDREN', nodeId);
+}
 
 let component = Vue.extend({
     render: h => h(App),
@@ -148,3 +213,4 @@ export default {
     Component: component,
     Store: store
 }
+
