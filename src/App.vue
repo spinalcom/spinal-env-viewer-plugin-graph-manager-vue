@@ -17,9 +17,12 @@
                         @node-selected="onNodeSelected($event)"
                         @hide-bim-object="onHideBimObject($event)"
                         @pull-children="onPullNode($event)"
+                        @active-node="onActiveNode($event)"
+
                         :nodes="nodes"
                         :context-ids="contextIds"
                         :childrenIds="childrenIds"
+                        :active-node="activeNode"
             />
         </div>
     </div>
@@ -45,7 +48,8 @@
             'selectedNode',
             'contextIds',
             'childrenIds',
-            'graph'
+            'graph',
+            'activeNode'
         ]),
 
         methods: {
@@ -61,6 +65,10 @@
 
             onPullNode: function (event) {
                 this.$store.commit("PULL_CHILDREN", event);
+            },
+
+            onActiveNode: function (event) {
+                this.$store.commit('SET_ACTIVE_NODE', event)
             }
         }
     }

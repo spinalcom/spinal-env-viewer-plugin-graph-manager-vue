@@ -20,7 +20,8 @@ let store = new Vuex.Store({
         pollingQueue: [],
         graph: {},
         childrenIds: [],
-        binders: {}
+        binders: {},
+        activeNode: {}
     },
 
     mutations: {
@@ -124,6 +125,9 @@ let store = new Vuex.Store({
             state.graph = graph;
         },
 
+        SET_ACTIVE_NODE: (state, activeNode) => {
+            state.activeNode = activeNode;
+        }
     },
 
     actions: {
