@@ -22,18 +22,23 @@
                         :nodes="nodes"
                         :context-ids="contextIds"
                         :childrenIds="childrenIds"
-                        :active-node="activeNode"
-            />
+                        :active-node="activeNode"/>
+
+
         </div>
     </div>
 </template>
 
 <script>
 
-    import {SideBar, TopBar, NodeList} from "spinal-env-viewer-vue-components-lib";
-    import {mapState} from 'vuex'
+  import {
+    NodeList,
+    SideBar,
+    TopBar
+  } from "spinal-env-viewer-vue-components-lib";
+  import { mapState } from 'vuex'
 
-    export default {
+  export default {
         name: 'graph-manager',
         components: {
             sideBar: SideBar,
@@ -69,8 +74,28 @@
 
             onActiveNode: function (event) {
                 this.$store.commit('SET_ACTIVE_NODE', event)
+            },
+
+          isInContext: function ( childrenId, contextId ) {
+            let res = false;
+
+            for (let i = 0; i < childrenId.length && !res; i++) {
+              const childId = childrenId[i];
+              if (this.nodes.hasOwnProperty( childId )) {
+                const node = this.nodes[childId];
+                const contextIds = node.contextIds;
+                for (let j = 0; j < contextIds.length && !res; j++) {
+                  if (contextId === contextIds[j])
+                    res = true;
+                }
+              }
             }
-        }
+
+            return res;
+          }
+        },
+
+
     }
 
 </script>
