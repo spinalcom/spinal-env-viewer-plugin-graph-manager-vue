@@ -157,21 +157,22 @@ let store = new Vuex.Store( {
       const option = {};
       option['selectedNode'] = context.state.nodes[ids[0]];
       option['context'] = context.state.nodes[ids[ids.length - 1]];
-      spinalContextMenuService.getApps( "GraphManagerSideBar", option )
-        .then( buttons => {
+      const promise = spinalContextMenuService.getApps( "GraphManagerSideBar", option );
+      if (typeof promise !== 'undefined') {
+        promise.then( buttons => {
           context.commit( "CHANGE_SIDE_BAR", buttons );
           context.commit( "CHANGE_SELECTED_NODE", option );
         } )
-        .catch( e => {
-          console.error( e );
-        } );
+          .catch( e => {
+            console.error( e );
+          } );
+      }
     },
 
     retrieveGlobalBar( context, option ) {
       spinalContextMenuService.getApps( "GraphManagerTopBar", option )
         .then( buttons => {
           context.commit( "SET_GLOBAL_BAR", buttons );
-          console.log( "ok ", option );
           context.commit( "CHANGE_SELECTED_NODE", option );
         } )
         .catch( e => {
