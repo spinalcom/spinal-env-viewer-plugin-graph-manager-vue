@@ -8,7 +8,7 @@ Vue.config.productionTip = false;
 
 Vue.use( VueMaterial );
 Vue.use( Vuex );
-const OPTION_SELECTED_NODE_INFO = 'info';
+const OPTION_SELECTED_NODE_INFO = 'selectedNode';
 const OPTION_CONTEXT_INFO = "context";
 let store = new Vuex.Store( {
 
