@@ -8,7 +8,8 @@ Vue.config.productionTip = false;
 
 Vue.use( VueMaterial );
 Vue.use( Vuex );
-
+const OPTION_SELECTED_NODE_INFO = 'info';
+const OPTION_CONTEXT_INFO = "context";
 let store = new Vuex.Store( {
 
   state: {
@@ -155,8 +156,8 @@ let store = new Vuex.Store( {
 
     onNodeSelected( context, ids ) {
       const option = {};
-      option['selectedNode'] = context.state.nodes[ids[0]];
-      option['context'] = context.state.nodes[ids[ids.length - 1]];
+      option[OPTION_SELECTED_NODE_INFO] = context.state.nodes[ids[0]];
+      option[OPTION_CONTEXT_INFO] = context.state.nodes[ids[ids.length - 1]];
       const promise = spinalContextMenuService.getApps( "GraphManagerSideBar", option );
       if (typeof promise !== 'undefined') {
         promise.then( buttons => {
