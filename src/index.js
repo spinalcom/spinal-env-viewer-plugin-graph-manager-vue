@@ -10,9 +10,9 @@ Vue.use( VueMaterial );
 Vue.use( Vuex );
 const OPTION_SELECTED_NODE_INFO = 'selectedNode';
 const OPTION_CONTEXT_INFO = "context";
-let store = new Vuex.Store( {
 
-  state: {
+function initialState() {
+  return {
     topBarButton: [],
     sideBarButton: [],
     contextIds: [],
@@ -22,8 +22,15 @@ let store = new Vuex.Store( {
     graph: {},
     childrenIds: [],
     binders: {},
-    activeNode: {}
-  },
+    activeNode: {},
+    reset: false
+  };
+
+}
+
+let store = new Vuex.Store( {
+
+  state: initialState(),
 
   mutations: {
 
@@ -123,6 +130,18 @@ let store = new Vuex.Store( {
 
     SET_ACTIVE_NODE: ( state, activeNode ) => {
       state.activeNode = activeNode;
+    },
+    SET_RESET: ( state, reset ) => {
+      state.reset = reset;
+    },
+    RESET: ( state ) => {
+      const s = initialState();
+
+      for (let key in s) {
+        if (s.hasOwnProperty( key )) {
+          state[key] = s[key];
+        }
+      }
     }
   },
 
