@@ -102,10 +102,6 @@ let store = new Vuex.Store( {
       }
     },
 
-    SET_CHILDREN_IDS: ( state, id ) => {
-
-    },
-
     SET_GLOBAL_BAR: ( state, bts ) => {
       const buttons = [];
       for (let i = 0; i < bts.length; i++) {
@@ -122,6 +118,12 @@ let store = new Vuex.Store( {
       }
 
       state.topBarButton = buttons;
+    },
+    SET_NODE_ID: ( state, info ) => {
+      if (state.nodes.hasOwnProperty( info.id.get() )) {
+        state.nodes[info.id.get()] = info;
+
+      }
     },
 
     SET_GRAPH: ( state, graph ) => {
