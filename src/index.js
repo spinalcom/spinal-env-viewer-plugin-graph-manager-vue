@@ -34,37 +34,6 @@ let store = new Vuex.Store( {
 
   mutations: {
 
-    CHANGE_SELECTED_NODE: ( state, node ) => {
-      state.selectedNode = node;
-      state.selectedNode.graph = state.graph;
-    },
-
-    CHANGE_SIDE_BAR: ( state, buttons ) => {
-
-      const res = [];
-      for (let i = 0; i < buttons.length; i++) {
-        let button = buttons[i];
-        if (button.hasOwnProperty( "buttonCfg" )) {
-          let butcfg = button.buttonCfg;
-          butcfg.toolTip = button.label;
-          butcfg.action = button.action;
-          res.push( { button: butcfg, badge_content: button.badgeCfg } );
-        }
-      }
-
-      state.sideBarButton = res;
-    },
-
-    PULL_CHILDREN: ( state, nodeId ) => {
-      state.pollingQueue.push( nodeId );
-    },
-
-    EMPTY_POLL: ( state, id ) => {
-      const index = state.pollingQueue.indexOf( id );
-      state.pollingQueue.splice( index, 1 );
-    },
-
-
     ADD_CONTEXTS: ( state, contexts ) => {
       for (let i = 0; i < contexts.length; i++) {
         const contextId = contexts[i].id.get();
@@ -102,6 +71,54 @@ let store = new Vuex.Store( {
       }
     },
 
+    CHANGE_SELECTED_NODE: ( state, node ) => {
+      state.selectedNode = node;
+      state.selectedNode.graph = state.graph;
+    },
+
+    CHANGE_SIDE_BAR: ( state, buttons ) => {
+
+      const res = [];
+      for (let i = 0; i < buttons.length; i++) {
+        let button = buttons[i];
+        if (button.hasOwnProperty( "buttonCfg" )) {
+          let butcfg = button.buttonCfg;
+          butcfg.toolTip = button.label;
+          butcfg.action = button.action;
+          res.push( { button: butcfg, badge_content: button.badgeCfg } );
+        }
+      }
+
+      state.sideBarButton = res;
+    },
+
+    EMPTY_POLL: ( state, id ) => {
+      const index = state.pollingQueue.indexOf( id );
+      state.pollingQueue.splice( index, 1 );
+    },
+
+    PULL_CHILDREN: ( state, nodeId ) => {
+      state.pollingQueue.push( nodeId );
+    },
+
+    RESET: ( state ) => {
+      const s = initialState();
+
+      for (let key in s) {
+        if (s.hasOwnProperty( key )) {
+          state[key] = s[key];
+        }
+      }
+    },
+
+    REMOVE_NODE: ( state, id ) => {
+      if (state.nodes.hasOwnProperty( id )) {
+        console.log( 'remove' );
+        state.childrenIds.splice( state.childrenIds.indexOf( id ), 1 );
+        delete state.nodes[id];
+      }
+    },
+
     SET_GLOBAL_BAR: ( state, bts ) => {
       const buttons = [];
       for (let i = 0; i < bts.length; i++) {
@@ -119,6 +136,7 @@ let store = new Vuex.Store( {
 
       state.topBarButton = buttons;
     },
+
     SET_NODE_ID: ( state, info ) => {
       if (state.nodes.hasOwnProperty( info.id.get() )) {
         state.nodes[info.id.get()] = info;
@@ -133,18 +151,12 @@ let store = new Vuex.Store( {
     SET_ACTIVE_NODE: ( state, activeNode ) => {
       state.activeNode = activeNode;
     },
+
     SET_RESET: ( state, reset ) => {
       state.reset = reset;
     },
-    RESET: ( state ) => {
-      const s = initialState();
 
-      for (let key in s) {
-        if (s.hasOwnProperty( key )) {
-          state[key] = s[key];
-        }
-      }
-    }
+
   },
 
   actions: {
