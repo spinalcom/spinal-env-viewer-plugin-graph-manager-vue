@@ -3,35 +3,28 @@
   "version": "0.1.1",
   "private": true,
   "main": "src/index.js",
+  "scripts": {
+    "build": "babel --config-file ./myBabel src -d build -s inline",
+    "doc": "mkdir -p Docs && jsdoc2md src/GraphManagerService.js > Docs/API.md",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "dependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.3",
-    "babel-preset-env": "^1.7.0",
     "material-design-icons": "^3.0.1",
     "spinal-env-viewer-context-menu-service": "git+https://github.com/spinalcom/spinal-env-viewer-context-menu-service.git",
-    "spinal-env-viewer-vue-components-lib": "git+https://github.com/spinalcom/spinal-env-viewer-vue-components-lib.git",
+    "spinal-env-viewer-vue-components-lib": "file:../spinal-env-viewer-vue-components-lib",
+    "spinal-env-viewer-graph-service": "file:../spinal-env-viewer-graph-service",
     "vue": "^2.5.17",
     "vue-material": "^1.0.0-beta-10.2",
     "vuex": "^3.0.1"
   },
   "devDependencies": {
+    "@babel/cli": "^7.1.2",
+    "@babel/core": "^7.1.2",
+    "@babel/preset-env": "^7.1.0",
     "@vue/cli-plugin-eslint": "^3.0.5",
     "@vue/cli-service": "^3.0.5",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "vue-template-compiler": "^2.5.17"
-  },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "plugin:vue/essential",
-      "eslint:recommended"
-    ],
-    "rules": {},
-    "parserOptions": {
-      "parser": "babel-eslint"
-    }
   },
   "postcss": {
     "plugins": {

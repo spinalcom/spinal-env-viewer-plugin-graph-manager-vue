@@ -1,5 +1,5 @@
 <template>
-    <div class="plugin-graph-viewer">
+    <div :style="{height: height()}" class="plugin-graph-viewer">
 
         <div class="graph-manager-top-bar">
 
@@ -12,10 +12,11 @@
                     class="plugin-graph-viewer-refresh"
                     icon="refresh"
                     tool-tip="refresh graph"
-                    v-on:click="refresh()"
+                    v-on:click="refresh"
             />
 
         </div>
+
         <div class="graph-manager-body">
 
             <side-bar class="graph-manager-side-bar"
@@ -24,15 +25,17 @@
             />
 
             <nodes-list class="graph-viewer"
-                        :active-node="activeNode"
-                        :childrenIds="childrenIds"
-                        :context-ids="contextIds"
-                        :nodes="nodes"
 
-                        @active-node="onActiveNode($event)"
-                        @hide-bim-object="onHideBimObject($event)"
-                        @node-selected="onNodeSelected($event)"
-                        @pull-children="onPullNode($event)"/>
+                        :active-nodes-id="activeNodesId"
+                        :contexts-id="contextsId"
+                        :get-children-id="getChildrenId"
+                        :getNode="getNode"
+                        :show-hide-bim-object="true"
+
+                        @hide-bim-object="onHideBimObject"
+
+
+            />
 
 
         </div>
@@ -48,6 +51,7 @@
     TopBar
   } from "spinal-env-viewer-vue-components-lib";
   import { mapState } from 'vuex'
+  import { SpinalGraphService } from "spinal-env-viewer-graph-service";
 
   export default {
     name: 'graph-manager',
@@ -60,69 +64,45 @@
 
     computed: mapState( [
       'topBarButton',
-      'sideBarButton',
-      'nodes',
-      'selectedNode',
-      'contextIds',
-      'childrenIds',
       'graph',
-      'activeNode',
-      'reset'
-    ] ),
+      'sideBarButton',
+      'selectedNode',
+
+      'contextsId',
+      'activeNodesId',
+
+      'nodes',
+      'modified',
+    ] )
+    ,
 
     methods: {
+
+      getNode: function ( nodeId ) {
+        return this.nodes[nodeId];
+      },
+
+      getChildrenId: function ( nodeId, contextId ) {
+        //TODO FIX babel and spread operator tu use getters
+        return SpinalGraphService.getChildrenInContext( nodeId, contextId )
+      },
+
+      height: function () {
+        if (LMV_VIEWER_VERSION.includes( "6" ))
+          return "calc(100% - 59px)";
+        return "calc(100% - 16px)";
+      },
+
       onHideBimObject: function ( event ) {
         console.log( "hide bim obj event", event )
       },
 
-      onNodeSelected: function ( event ) {
-        this.$store.dispatch( "onNodeSelected", event )
-          .then()
-          .catch( e => console.error( e ) );
-      },
-
-      onPullNode: function ( event ) {
-        this.$store.commit( "PULL_CHILDREN", event );
-      },
-
-      onActiveNode: function ( event ) {
-        this.$store.commit( 'SET_ACTIVE_NODE', event )
-      },
-
-      isInContext: function ( childrenId, contextId ) {
-        let res = false;
-
-        for (let i = 0; i < childrenId.length && !res; i++) {
-          const childId = childrenId[i];
-          if (this.nodes.hasOwnProperty( childId )) {
-            const node = this.nodes[childId];
-            const contextIds = node.contextIds;
-            for (let j = 0; j < contextIds.length && !res; j++) {
-              if (contextId === contextIds[j])
-                res = true;
-            }
-          }
-        }
-
-        return res;
-      },
 
       refresh: function () {
-        this.$store.commit( 'RESET' )
+        this.$store.commit( 'REFRESH' )
       }
+
     },
-    watch: {
-      'reset': {
-        handler: function ( reset ) {
-          if (reset) {
-            this.$forceUpdate();
-            this.$store.commit( 'SET_RESET', !reset );
-          }
-        }
-      }
-    }
-
-
   }
 
 </script>
@@ -131,7 +111,7 @@
 
 
     .plugin-graph-viewer {
-        height: 100%;
+
     }
 
     .plugin-graph-viewer * {
@@ -165,6 +145,7 @@
         float: left;
         width: 98%;
     }
+
     .graph-manager-body {
         display: flex;
         height: 100%;
