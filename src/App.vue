@@ -1,5 +1,5 @@
 <template>
-    <div :style="{height: height()}" class="plugin-graph-viewer">
+    <div class="plugin-graph-viewer" :style="{height: height()}">
 
         <div class="graph-manager-top-bar">
 
@@ -7,6 +7,20 @@
                      :option="graph"
                      class="graph-manager-top-tools-bar"
             />
+
+
+            <input v-if="isSearchActive"
+                   v-model="searchText"
+                   placeholder="search name "
+            />
+            <spinal-icon-button
+                    v-else
+                    class="plugin-graph-viewer-refresh"
+                    icon="search"
+                    tool-tip="refresh graph"
+                    v-on:click="isSearchActive = true"
+            />
+
 
             <spinal-icon-button
                     class="plugin-graph-viewer-refresh"
@@ -26,14 +40,20 @@
 
             <nodes-list class="graph-viewer"
 
-                        :active-nodes-id="activeNodesId"
-                        :contexts-id="contextsId"
+                        :refresh="refreshed"
+                        :nodes="nodes"
+                        :show-hide-bim-object="false"
+                        :contexts-id="displayNodes"
+
                         :get-children-id="getChildrenId"
                         :getNode="getNode"
-                        :show-hide-bim-object="true"
 
+                        :active-nodes-id="activeNodesId"
+                        :pull-children="pullChildren"
+
+                        @click="onNodeSelected($event)"
+                        @right-click=""
                         @hide-bim-object="onHideBimObject"
-
 
             />
 
@@ -61,36 +81,45 @@
       TopBar: TopBar,
       NodesList: NodeList
     },
-
+    data: function () {
+      return {
+        isSearchActive: false,
+        searchText: '',
+        displayNodes: []
+      }
+    },
     computed: mapState( [
       'topBarButton',
-      'graph',
       'sideBarButton',
-      'selectedNode',
-
       'contextsId',
-      'activeNodesId',
-
       'nodes',
-      'modified',
-    ] )
-    ,
-
+      'activeNodesId',
+      'selectedNode',
+      'refreshed',
+      'searchId'
+    ] ),
     methods: {
-
+      onNodeSelected: function ( event ) {
+        this.$store.dispatch( "onNodeSelected", event )
+          .then()
+          .catch( e => console.error( e ) );
+      },
       getNode: function ( nodeId ) {
-        return this.nodes[nodeId];
+        const node = this.nodes.get( nodeId );
+        if (typeof nodeId !== "undefined" && typeof node === "undefined") {
+          this.$store.dispatch( 'getNode', nodeId )
+        }
+        return node;
       },
 
-      getChildrenId: function ( nodeId, contextId ) {
-        //TODO FIX babel and spread operator tu use getters
-        return SpinalGraphService.getChildrenInContext( nodeId, contextId )
+      getChildrenId: function ( nodeId ) {
+        return SpinalGraphService.getChildrenIds( nodeId );
+
       },
 
       height: function () {
-        if (LMV_VIEWER_VERSION.includes( "6" ))
-          return "calc(100% - 59px)";
-        return "calc(100% - 16px)";
+
+        return "100%";
       },
 
       onHideBimObject: function ( event ) {
@@ -100,9 +129,30 @@
 
       refresh: function () {
         this.$store.commit( 'REFRESH' )
-      }
+      },
+      pullChildren: function ( nodeId ) {
+        this.$store.dispatch( 'pullChildren', nodeId );
+      },
+
 
     },
+    watch: {
+      'searchText': {
+        handler: function ( value ) {
+          this.$store.commit('SEARCH_TEXT', value);
+          if (value.length === 0){
+            this.displayNodes = this.contextsId;
+            this.isSearchActive = false;
+          }else{
+            this.displayNodes = this.searchId;
+          }
+        }
+      },
+      immediate: true
+    },
+    mounted() {
+      this.displayNodes = this.contextsId
+    }
   }
 
 </script>
@@ -111,11 +161,12 @@
 
 
     .plugin-graph-viewer {
-
+        overflow: hidden;
     }
 
     .plugin-graph-viewer * {
         box-sizing: border-box;
+        margin: 0px;
     }
 
     .graph-viewer {

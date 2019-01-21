@@ -3,9 +3,10 @@ import VueMaterial from 'vue-material';
 import Vuex from "vuex";
 import { spinalContextMenuService } from "spinal-env-viewer-context-menu-service";
 import {
-  OPTION_CONTEXT_INFO,
-  OPTION_SELECTED_NODE_INFO
+  OPTION_SELECTED_NODE_INFO,
+  OPTION_CONTEXT_INFO
 } from './config.js';
+import { SpinalGraphService } from "spinal-env-viewer-graph-service";
 
 Vue.config.productionTip = false;
 
@@ -17,13 +18,28 @@ function initialState() {
     topBarButton: [],
     sideBarButton: [],
     contextsId: [],
-    nodes: {},
-    selectedNode: {},
-    graph: {},
+    searchId: [],
+    nodes: new Map(),
     activeNodesId: [],
-    childrenMapping: new Map()
+    sync: [],
+    selectedNode: {},
+    refreshed: false,
+    childrenPull: []
+
+    /*
+     graph: {},
+     activeNodesId: [],
+     childrenMapping: new Map()*/
   };
 
+}
+function refreshState() {
+  return {
+    activeNodesId: [],
+    sync: [],
+    selectedNode: {},
+    refreshed: true,
+  };
 }
 
 let store = new Vuex.Store( {
@@ -31,72 +47,70 @@ let store = new Vuex.Store( {
   state: initialState(),
 
   mutations: {
-
+    ADD_CONTEXT: ( state, context ) => {
+      const contextId = context.id.get();
+      if (state.contextId.includes( contextId )) {
+        state.contextId.push( contextId );
+        if (!state.nodes.has( contextId )) {
+          state.nodes.set( contextId, context );
+        }
+      }
+    },
     ADD_CONTEXTS: ( state, contexts ) => {
+      
       for (let i = 0; i < contexts.length; i++) {
         const contextId = contexts[i].id.get();
 
         if (!state.contextsId.includes( contextId )) {
           state.contextsId.push( contextId );
         }
-        if (!state.nodes.hasOwnProperty( contextId )) {
-          state.nodes[contextId] = contexts[i];
+        if (!state.nodes.has( contextId )) {
+          state.nodes.set( contextId, contexts[i] );
         }
       }
     },
 
-    ADD_NODE: ( state, node ) => {
-      const nodeId = node.id.get();
-      if (!state.nodes.hasOwnProperty( nodeId )) {
-        state.nodes[nodeId] = node;
-      }
-    },
-
-    ADD_NODES: ( state, nodes ) => {
-      for (let i = 0; i < nodes.length; i++) {
-        const nodeId = nodes[i].id.get();
-        if (!state.nodes.hasOwnProperty( nodeId )) {
-          state.nodes[nodeId] = nodes[i];
-        }
-      }
-    },
-
-    CHANGE_SELECTED_NODE: ( state, node ) => {
-      state.selectedNode = node;
-      state.selectedNode.graph = state.graph;
-    },
-
-    CHANGE_SIDE_BAR: ( state, buttons ) => {
+    SET_SIDE_BAR: ( state, buttons ) => {
 
       const res = [];
       for (let i = 0; i < buttons.length; i++) {
-        let button = buttons[i];
+        const button = buttons[i];
         if (button.hasOwnProperty( "buttonCfg" )) {
-          let butcfg = button.buttonCfg;
-          butcfg.toolTip = button.label;
-          butcfg.action = button.action;
-          res.push( { button: butcfg, badge_content: button.badgeCfg } );
+          const butCfg = button.buttonCfg;
+          butCfg.toolTip = button.label;
+          butCfg.action = button.action;
+          res.push( { button: butCfg, badge_content: button.badgeCfg } );
         }
       }
 
       state.sideBarButton = res;
     },
 
-    REFRESH: ( state ) => {
-      const s = initialState();
-
-      for (let key in s) {
-        if (s.hasOwnProperty( key )) {
-          state[key] = s[key];
-        }
-      }
+    SET_ACTIVE_NODE: ( state, activeNode ) => {
+      state.activeNodesId = [activeNode];
     },
 
-    REMOVE_NODE: ( state, id ) => {
-      if (state.nodes.hasOwnProperty( id )) {
-        state.childrenIds.splice( state.childrenIds.indexOf( id ), 1 );
-        delete state.nodes[id];
+    SET_SELECTED_NODE: ( state, option ) => {
+      state.selectedNode = option;
+      state.selectedNode.graph = state.graph;
+    },
+    GET_NODE: ( state ) => {
+      state.sync.splice( 0 );
+      state.refreshed = true;
+      //cf GraphManager
+    },
+    ADD_NODE: ( state, node ) => {
+      if (typeof node !== "undefined") {
+        state.nodes.set( node.id.get(), node );
+        state.refreshed = false;
       }
+    },
+    ADD_NODES: ( state, nodes ) => {
+      for (let i = 0; i < nodes.length; i++) {
+        const nodeId = nodes[i].id.get();
+        state.nodes.set( nodeId, nodes[i] );
+      }
+      state.refreshed = false;
     },
 
     SET_GLOBAL_BAR: ( state, bts ) => {
@@ -113,62 +127,99 @@ let store = new Vuex.Store( {
           } );
         }
       }
-
       state.topBarButton = buttons;
     },
+    REFRESH: ( state ) => {
+      const s = refreshState();
 
-    SET_NODE_ID: ( state, info ) => {
-      if (state.nodes.hasOwnProperty( info.id.get() )) {
-        state.nodes[info.id.get()] = info;
-
+      for (let key in s) {
+        if (s.hasOwnProperty( key )) {
+          state[key] = s[key];
+        }
       }
     },
 
     SET_GRAPH: ( state, graph ) => {
       state.graph = graph;
     },
-
-    SET_ACTIVE_NODE: ( state, activeNode ) => {
-      state.activeNode = activeNode;
+    REFRESHED: ( state ) => {
+      state.refreshed = true;
+    },
+    SET_NODE:(state, node )=> {
+      if (typeof node !== "undefined") {
+        state.nodes.set( node.id.get(), node );
+        state.refreshed = false;
+      }
+    },
+    REMOVE_NODE: ( state, id ) => {
+      if (state.nodes.has( id )) {
+        state.childrenIds.splice( state.childrenIds.indexOf( id ), 1 );
+        state.nodes.delete(id);
+      }
+    },
+    ADD_PARENT(state, nodeId){
+      state.childrenPull.push(nodeId);
     },
 
-    SET_CHILDREN_MAPPING: ( state, mapping ) => {
-      state.childrenMapping = mapping;
+    SEARCH_TEXT(state, text){
+      while (state.searchId.length > 0) {
+        state.searchId.splice(0);
+      }
+
+      for (const [key,node] of state.nodes) {
+        if (node.name.get().toLowerCase().includes(text.toLowerCase()))
+        {
+          state.searchId.push(key);
+        }
+      }
     }
   },
 
   actions: {
-
-
-    onNodeSelected( context, ids ) {
+    getNode(context, event){
+      SpinalGraphService.findNode(event).then(
+        node => context.commit('ADD_NODE', node)
+      ).catch(e => console.error(e));
+    },
+    onNodeSelected( context, event ) {
       const option = {};
-      option[OPTION_SELECTED_NODE_INFO] = context.state.nodes[ids[0]];
-      option[OPTION_CONTEXT_INFO] = context.state.nodes[ids[ids.length - 1]];
-      const promise = spinalContextMenuService.getApps( "GraphManagerSideBar", option );
-      if (typeof promise !== 'undefined') {
-        promise.then( buttons => {
-          context.commit( "CHANGE_SIDE_BAR", buttons );
-          context.commit( "CHANGE_SELECTED_NODE", option );
+      option[OPTION_SELECTED_NODE_INFO] = context.state.nodes.get( event.nodeId );
+      option[OPTION_CONTEXT_INFO] = context.state.nodes.get( event.contextId );
+      context.commit( "SET_ACTIVE_NODE", event.nodeId );
+      spinalContextMenuService
+        .getApps( "GraphManagerSideBar", option )
+        .then( buttons => {
+          context.commit( "SET_SIDE_BAR", buttons );
+          context.commit( "SET_SELECTED_NODE", option );
         } )
-          .catch( e => {
-            console.error( e );
-          } );
-      }
+        .catch( e => {
+          console.error( e );
+        } );
     },
 
     retrieveGlobalBar( context, option ) {
       spinalContextMenuService.getApps( "GraphManagerTopBar", option )
         .then( buttons => {
           context.commit( "SET_GLOBAL_BAR", buttons );
-          context.commit( "CHANGE_SELECTED_NODE", option );
         } )
         .catch( e => {
           console.error( e );
         } );
     },
+
+    pullChildren(context, nodeId){
+      if (!context.state.childrenPull.includes(nodeId)){
+        context.commit('ADD_PARENT', nodeId);
+        SpinalGraphService.getChildren(nodeId, [])
+          .then(children => context.commit('ADD_NODES', children));
+      }
+    }
+
+
   },
 
-} );
+} )
+;
 
 
 export default store;
