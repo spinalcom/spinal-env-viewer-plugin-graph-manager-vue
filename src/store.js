@@ -95,16 +95,15 @@ let store = new Vuex.Store( {
       },
       
       ADD_NODE: ( state, node ) => {
-        if (typeof node !== "undefined" && state.nodes.hasOwnProperty( node.id.get() )) {
+        if (typeof node !== "undefined" && !state.nodes.hasOwnProperty( node.id.get() )) {
           state.nodes[node.id.get()] = node;
         }
-        
       },
       ADD_NODES: ( state, nodes ) => {
         for (let i = 0; i < nodes.length; i++) {
           const nodeId = nodes[i].id.get();
           
-          if (typeof nodes[i] !== "undefined" && state.nodes.hasOwnProperty( nodeId )) {
+          if (typeof nodes[i] !== "undefined" && !state.nodes.hasOwnProperty( nodeId )) {
             state.nodes[nodeId] = nodes[i];
           }
         }
@@ -213,15 +212,6 @@ let store = new Vuex.Store( {
             console.error( e );
           } );
       },
-      pullChildren( context, nodeId ) {
-        SpinalGraphService.getChildren( nodeId, [] )
-          .then( children => {
-            context.commit( 'ADD_NODES', children );
-            context.commit( 'SET_CHILDREN', { parentId: nodeId, children } )
-          } );
-        
-      }
-      
       
     },
     
