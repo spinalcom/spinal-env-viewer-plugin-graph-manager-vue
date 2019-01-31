@@ -40,21 +40,16 @@
 
             <nodes-list class="graph-viewer"
 
+                        :active-nodes-id="activeNodesId"
+                        :contexts-id="displayNodes"
+
                         :has-child-in-context="hasChildInContext"
                         :nodes="nodes"
                         :show-hide-bim-object="false"
-                        :contexts-id="displayNodes"
 
-                        :get-children-id="getChildrenId"
-                        :getNode="getNode"
-
-                        :active-nodes-id="activeNodesId"
-                        :pull-children="pullChildren"
-
-                        @click="onNodeSelected($event)"
+                        @click="onNodeSelected"
                         @right-click=""
                         @hide-bim-object="onHideBimObject"
-
             />
 
 
@@ -106,7 +101,8 @@
         'nodes',
         'activeNodesId',
         'selectedNode',
-        'searchId'
+        'searchId',
+        'nodes'
       ] ),
       mapGetters( ['arrayNode', 'getChildrenId', 'hasChildInContext'] ),
       {}
@@ -117,17 +113,8 @@
           .then()
           .catch( e => console.error( e ) );
       },
-      getNode: function ( nodeId ) {
-        const node = this.nodes.get( nodeId );
-        if (typeof nodeId !== "undefined" && typeof node === "undefined") {
-          this.$store.dispatch( 'getNode', nodeId )
-        }
-        return node;
-      },
-
 
       height: function () {
-
         return "100%";
       },
 
@@ -135,14 +122,9 @@
         console.log( "hide bim obj event", event )
       },
 
-
       refresh: function () {
         this.$store.commit( 'REFRESH' )
       },
-      pullChildren: function ( nodeId ) {
-        this.$store.dispatch( 'pullChildren', nodeId );
-      },
-
 
     },
     watch: {
@@ -172,10 +154,10 @@
     .plugin-graph-viewer {
         overflow: hidden;
     }
-    box-sizing: border-box;
 
     .plugin-graph-viewer * {
-        margin: 0px;
+        margin: 0;
+        box-sizing: border-box;
     }
 
     .graph-viewer {

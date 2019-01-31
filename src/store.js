@@ -19,7 +19,7 @@ function initialState() {
     sideBarButton: [],
     contextsId: [],
     searchId: [],
-    nodes: new Map(),
+    nodes: {},
     activeNodesId: [],
     sync: [],
     selectedNode: {},
@@ -47,21 +47,20 @@ let store = new Vuex.Store( {
         const contextId = context.id.get();
         if (state.contextId.includes( contextId )) {
           state.contextId.push( contextId );
-          if (!state.nodes.has( contextId )) {
-            state.nodes.set( contextId, context );
+          if (!state.nodes.hasOwnProperty( contextId )) {
+            state.nodes[contextId] = context;
           }
         }
       },
       ADD_CONTEXTS: ( state, contexts ) => {
-        
         for (let i = 0; i < contexts.length; i++) {
           const contextId = contexts[i].id.get();
           
           if (!state.contextsId.includes( contextId )) {
             state.contextsId.push( contextId );
           }
-          if (!state.nodes.has( contextId )) {
-            state.nodes.set( contextId, contexts[i] );
+          if (!state.nodes.hasOwnProperty( contextId )) {
+            state.nodes[contextId] = contexts[i];
           }
         }
       },
@@ -96,15 +95,18 @@ let store = new Vuex.Store( {
       },
       
       ADD_NODE: ( state, node ) => {
-        if (typeof node !== "undefined") {
-          state.nodes.set( node.id.get(), node );
-          
+        if (typeof node !== "undefined" && state.nodes.hasOwnProperty( node.id.get() )) {
+          state.nodes[node.id.get()] = node;
         }
+        
       },
       ADD_NODES: ( state, nodes ) => {
         for (let i = 0; i < nodes.length; i++) {
           const nodeId = nodes[i].id.get();
-          state.nodes.set( nodeId, nodes[i] );
+          
+          if (typeof nodes[i] !== "undefined" && state.nodes.hasOwnProperty( nodeId )) {
+            state.nodes[nodeId] = nodes[i];
+          }
         }
         
       },
@@ -144,14 +146,23 @@ let store = new Vuex.Store( {
       },
       SET_NODE: ( state, node ) => {
         if (typeof node !== "undefined") {
-          state.nodes.set( node.id.get(), node );
+          if (state.nodes.hasOwnProperty( node.id.get() )) {
+            for (const key in node) {
+              if (node.hasOwnProperty( key )) {
+                state.nodes[node.id.get()][key] = node[key];
+              }
+            }
+          }
+          else {
+            state.nodes[node.id.get()] = node;
+          }
         }
         
       },
       REMOVE_NODE: ( state, id ) => {
         if (state.nodes.has( id )) {
           state.childrenIds.splice( state.childrenIds.indexOf( id ), 1 );
-          state.nodes.delete( id );
+          delete state.nodes[id];
         }
       },
       
@@ -180,8 +191,8 @@ let store = new Vuex.Store( {
       },
       onNodeSelected( context, event ) {
         const option = {};
-        option[OPTION_SELECTED_NODE_INFO] = context.state.nodes.get( event.nodeId );
-        option[OPTION_CONTEXT_INFO] = context.state.nodes.get( event.contextId );
+        option[OPTION_SELECTED_NODE_INFO] = context.state.nodes[event.nodeId];
+        option[OPTION_CONTEXT_INFO] = context.state.nodes[event.contextId];
         context.commit( "SET_ACTIVE_NODE", event.nodeId );
         spinalContextMenuService
           .getApps( "GraphManagerSideBar", option )
@@ -205,7 +216,7 @@ let store = new Vuex.Store( {
       pullChildren( context, nodeId ) {
         SpinalGraphService.getChildren( nodeId, [] )
           .then( children => {
-            context.commit( 'ADD_NODES', children )
+            context.commit( 'ADD_NODES', children );
             context.commit( 'SET_CHILDREN', { parentId: nodeId, children } )
           } );
         
@@ -219,13 +230,13 @@ let store = new Vuex.Store( {
         return Array.from( state.nodes );
       },
       getNodeById: ( state ) => ( id ) => {
-        return state.nodes.get( id );
+        return state.nodes[id];
       },
       getChildrenId: ( state ) => ( id ) => {
-        return state.nodes.get( id ).childrenIds;
+        return state.nodes[id].childrenIds;
       },
-      hasChildInContext: (state)=> (id, contextsId) => {;
-        return SpinalGraphService.hasChildInContext(id, contextsId)
+      hasChildInContext: ( state ) => ( id, contextsId ) => {
+        return SpinalGraphService.hasChildInContext( id, contextsId );
       }
     }
     
