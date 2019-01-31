@@ -40,7 +40,7 @@
 
             <nodes-list class="graph-viewer"
 
-                        :refresh="refreshed"
+                        :has-child-in-context="hasChildInContext"
                         :nodes="nodes"
                         :show-hide-bim-object="false"
                         :contexts-id="displayNodes"
@@ -64,14 +64,24 @@
 
 <script>
 
+  function test() {
+    const res = {};
+    for (const arg of arguments) {
+      Object.assign( res, arg );
+    }
+    return res;
+  }
+
   import {
     NodeList,
     SideBar,
     SpinalIconButton,
     TopBar
   } from "spinal-env-viewer-vue-components-lib";
-  import { mapState } from 'vuex'
-  import { SpinalGraphService } from "spinal-env-viewer-graph-service";
+  import {
+    mapState,
+    mapGetters
+  } from 'vuex'
 
   export default {
     name: 'graph-manager',
@@ -88,16 +98,19 @@
         displayNodes: []
       }
     },
-    computed: mapState( [
-      'topBarButton',
-      'sideBarButton',
-      'contextsId',
-      'nodes',
-      'activeNodesId',
-      'selectedNode',
-      'refreshed',
-      'searchId'
-    ] ),
+    computed: test(
+      mapState( [
+        'topBarButton',
+        'sideBarButton',
+        'contextsId',
+        'nodes',
+        'activeNodesId',
+        'selectedNode',
+        'searchId'
+      ] ),
+      mapGetters( ['arrayNode', 'getChildrenId', 'hasChildInContext'] ),
+      {}
+    ),
     methods: {
       onNodeSelected: function ( event ) {
         this.$store.dispatch( "onNodeSelected", event )
@@ -112,10 +125,6 @@
         return node;
       },
 
-      getChildrenId: function ( nodeId ) {
-        return SpinalGraphService.getChildrenIds( nodeId );
-
-      },
 
       height: function () {
 
@@ -139,11 +148,11 @@
     watch: {
       'searchText': {
         handler: function ( value ) {
-          this.$store.commit('SEARCH_TEXT', value);
-          if (value.length === 0){
+          this.$store.commit( 'SEARCH_TEXT', value );
+          if (value.length === 0) {
             this.displayNodes = this.contextsId;
             this.isSearchActive = false;
-          }else{
+          } else {
             this.displayNodes = this.searchId;
           }
         }
@@ -163,9 +172,9 @@
     .plugin-graph-viewer {
         overflow: hidden;
     }
+    box-sizing: border-box;
 
     .plugin-graph-viewer * {
-        box-sizing: border-box;
         margin: 0px;
     }
 
