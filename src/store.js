@@ -151,15 +151,14 @@ let store = new Vuex.Store( {
                 state.nodes[node.id.get()][key] = node[key];
               }
             }
-          }
-          else {
+          } else {
             state.nodes[node.id.get()] = node;
           }
         }
         
       },
       REMOVE_NODE: ( state, id ) => {
-        if (state.nodes.has( id )) {
+        if (state.nodes.hasOwnProperty( id )) {
           state.childrenIds.splice( state.childrenIds.indexOf( id ), 1 );
           delete state.nodes[id];
         }
