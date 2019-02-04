@@ -159,7 +159,6 @@ let store = new Vuex.Store( {
       },
       REMOVE_NODE: ( state, id ) => {
         if (state.nodes.hasOwnProperty( id )) {
-          state.childrenIds.splice( state.childrenIds.indexOf( id ), 1 );
           delete state.nodes[id];
         }
       },
