@@ -238,6 +238,7 @@ let store = new Vuex.Store( {
       pullChildren( context, id ) {
         SpinalGraphService.getChildren( id, [] ).then(
           ( children ) => {
+            console.log( 'store pull children ', children );
             context.commit( 'ADD_NODES', children );
           }
         );
