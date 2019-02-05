@@ -74,7 +74,7 @@
                         @click="onNodeSelected"
                         @right-click=""
                         @hide-bim-object="onHideBimObject"
-                        @pull-children=""
+                        @pull-children="pullChildren"
             />
 
 
