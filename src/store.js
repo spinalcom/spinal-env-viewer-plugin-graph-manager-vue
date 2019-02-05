@@ -1,10 +1,34 @@
+/*
+ * Copyright 2019 SpinalCom - www.spinalcom.com
+ *
+ *  This file is part of SpinalCore.
+ *
+ *  Please read all of the following terms and conditions
+ *  of the Free Software license Agreement ("Agreement")
+ *  carefully.
+ *
+ *  This Agreement is a legally binding contract between
+ *  the Licensee (as defined below) and SpinalCom that
+ *  sets forth the terms and conditions that govern your
+ *  use of the Program. By installing and/or using the
+ *  Program, you agree to abide by all the terms and
+ *  conditions stated or referenced herein.
+ *
+ *  If you do not agree to abide by these terms and
+ *  conditions, do not demonstrate your acceptance and do
+ *  not install or use the Program.
+ *  You should have received a copy of the license along
+ *  with this file. If not, see
+ *  <http://resources.spinalcom.com/licenses.pdf>.
+ */
+
 import Vue from 'vue';
 import VueMaterial from 'vue-material';
 import Vuex from "vuex";
 import { spinalContextMenuService } from "spinal-env-viewer-context-menu-service";
 import {
-  OPTION_SELECTED_NODE_INFO,
-  OPTION_CONTEXT_INFO
+  OPTION_CONTEXT_INFO,
+  OPTION_SELECTED_NODE_INFO
 } from './config.js';
 import { SpinalGraphService } from "spinal-env-viewer-graph-service";
 
@@ -26,7 +50,7 @@ function initialState() {
     refreshed: false,
     childrenMapping: new Map()
   };
-  
+
 }
 
 function refreshState() {
@@ -175,8 +199,9 @@ let store = new Vuex.Store( {
         }
       },
       SET_CHILDREN: ( state, payload ) => {
-        if (payload.hasOwnProperty( 'parentId' ) && payload.hasOwnProperty( 'children' ))
-          state.childrenMapping.set( payload.parentId, payload.children )
+        if (payload.hasOwnProperty( 'parentId' ) && payload.hasOwnProperty( 'children' )) {
+          state.childrenMapping.set( payload.parentId, payload.children );
+        }
       }
     },
     
@@ -210,6 +235,13 @@ let store = new Vuex.Store( {
             console.error( e );
           } );
       },
+      pullChildren( context, id ) {
+        SpinalGraphService.getChildren( id, [] ).then(
+          ( children ) => {
+            context.commit( 'ADD_NODES', children );
+          }
+        );
+      }
       
     },
     
@@ -225,7 +257,8 @@ let store = new Vuex.Store( {
       },
       hasChildInContext: ( state ) => ( id, contextsId ) => {
         return SpinalGraphService.hasChildInContext( id, contextsId );
-      }
+      },
+      
     }
     
   } )

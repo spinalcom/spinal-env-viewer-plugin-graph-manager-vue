@@ -74,6 +74,7 @@
                         @click="onNodeSelected"
                         @right-click=""
                         @hide-bim-object="onHideBimObject"
+                        @pull-children=""
             />
 
 
@@ -149,7 +150,9 @@
       refresh: function () {
         this.$store.commit( 'REFRESH' )
       },
-
+      pullChildren: function ( event ) {
+        this.$store.dispatch( 'pullChildren', event );
+      }
     },
     watch: {
       'searchText': {
@@ -216,25 +219,6 @@
         display: flex;
         height: 100%;
         width: 100%;
-    }
-
-    .graph-viewer::-webkit-scrollbar {
-        background-color: #121212;
-    }
-
-    .graph-viewer::-webkit-scrollbar {
-        width: 5px;
-        background-color: #121212;
-
-    }
-
-    .graph-viewer::-webkit-scrollbar-track {
-        -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-    }
-
-    .graph-viewer::-webkit-scrollbar-thumb {
-        background-color: #737374;
-        outline: 1px solid slategrey;
     }
 
 
