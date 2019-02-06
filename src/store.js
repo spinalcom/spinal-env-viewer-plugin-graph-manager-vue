@@ -88,6 +88,24 @@ let store = new Vuex.Store( {
           }
         }
       },
+      ADD_NODE: ( state, node ) => {
+        if (typeof node !== "undefined" && !state.nodes.hasOwnProperty( node.id.get() )) {
+          state.nodes[node.id.get()] = node;
+        }
+      },
+      ADD_NODES: ( state, nodes ) => {
+        for (let i = 0; i < nodes.length; i++) {
+          const nodeId = nodes[i].id.get();
+          if (typeof nodes[i] !== "undefined" && !state.nodes.hasOwnProperty( nodeId )) {
+            state.nodes[nodeId] = nodes[i];
+          }
+        }
+      },
+      
+      GET_NODE: ( state ) => {
+        state.sync.splice( 0 );
+        //cf GraphManager
+      },
       
       SET_SIDE_BAR: ( state, buttons ) => {
         
@@ -104,36 +122,13 @@ let store = new Vuex.Store( {
         
         state.sideBarButton = res;
       },
-      
       SET_ACTIVE_NODE: ( state, activeNode ) => {
         state.activeNodesId = [activeNode];
       },
-      
       SET_SELECTED_NODE: ( state, option ) => {
         state.selectedNode = option;
         state.selectedNode.graph = state.graph;
       },
-      GET_NODE: ( state ) => {
-        state.sync.splice( 0 );
-        //cf GraphManager
-      },
-      
-      ADD_NODE: ( state, node ) => {
-        if (typeof node !== "undefined" && !state.nodes.hasOwnProperty( node.id.get() )) {
-          state.nodes[node.id.get()] = node;
-        }
-      },
-      ADD_NODES: ( state, nodes ) => {
-        for (let i = 0; i < nodes.length; i++) {
-          const nodeId = nodes[i].id.get();
-          
-          if (typeof nodes[i] !== "undefined" && !state.nodes.hasOwnProperty( nodeId )) {
-            state.nodes[nodeId] = nodes[i];
-          }
-        }
-        
-      },
-      
       SET_GLOBAL_BAR: ( state, bts ) => {
         const buttons = [];
         for (let i = 0; i < bts.length; i++) {
@@ -150,22 +145,13 @@ let store = new Vuex.Store( {
         }
         state.topBarButton = buttons;
       },
-      REFRESH: ( state ) => {
-        const s = refreshState();
-        
-        for (let key in s) {
-          if (s.hasOwnProperty( key )) {
-            state[key] = s[key];
-          }
+      SET_CHILDREN: ( state, payload ) => {
+        if (payload.hasOwnProperty( 'parentId' ) && payload.hasOwnProperty( 'children' )) {
+          state.childrenMapping.set( payload.parentId, payload.children );
         }
-        state.refreshed = false;
       },
-      
       SET_GRAPH: ( state, graph ) => {
         state.graph = graph;
-      },
-      REFRESHED: ( state ) => {
-        state.refreshed = true;
       },
       SET_NODE: ( state, node ) => {
         if (typeof node !== "undefined") {
@@ -181,12 +167,6 @@ let store = new Vuex.Store( {
         }
         
       },
-      REMOVE_NODE: ( state, id ) => {
-        if (state.nodes.hasOwnProperty( id )) {
-          delete state.nodes[id];
-        }
-      },
-      
       SEARCH_TEXT: ( state, text ) => {
         while (state.searchId.length > 0) {
           state.searchId.splice( 0 );
@@ -198,10 +178,24 @@ let store = new Vuex.Store( {
           }
         }
       },
-      SET_CHILDREN: ( state, payload ) => {
-        if (payload.hasOwnProperty( 'parentId' ) && payload.hasOwnProperty( 'children' )) {
-          state.childrenMapping.set( payload.parentId, payload.children );
+      
+      REMOVE_NODE: ( state, id ) => {
+        if (state.nodes.hasOwnProperty( id )) {
+          delete state.nodes[id];
         }
+      },
+      REFRESHED: ( state ) => {
+        state.refreshed = true;
+      },
+      REFRESH: ( state ) => {
+        const s = refreshState();
+        
+        for (let key in s) {
+          if (s.hasOwnProperty( key )) {
+            state[key] = s[key];
+        }
+      }
+        state.refreshed = false;
       }
     },
     
@@ -238,7 +232,13 @@ let store = new Vuex.Store( {
       pullChildren( context, id ) {
         SpinalGraphService.getChildren( id, [] ).then(
           ( children ) => {
-            console.log( 'store pull children ', children );
+            console.log( 'store pull children:  ', children );
+            for (let i = 0; i < children.length; i++) {
+              for (let j = 0; j < children[i]['childrenIds'].length; j++) {
+                console.log( 'child ', children );
+                context.dispatch( 'pullChildren', children[i]['childrenIds'][j] );
+              }
+            }
             context.commit( 'ADD_NODES', children );
           }
         );

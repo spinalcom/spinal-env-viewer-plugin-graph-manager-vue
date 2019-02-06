@@ -74,7 +74,6 @@
                         @click="onNodeSelected"
                         @right-click=""
                         @hide-bim-object="onHideBimObject"
-                        @pull-children="pullChildren"
             />
 
 
@@ -150,9 +149,6 @@
       refresh: function () {
         this.$store.commit( 'REFRESH' )
       },
-      pullChildren: function ( event ) {
-        this.$store.dispatch( 'pullChildren', event );
-      }
     },
     watch: {
       'searchText': {
