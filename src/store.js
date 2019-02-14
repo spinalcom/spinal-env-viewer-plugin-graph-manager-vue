@@ -172,9 +172,15 @@ let store = new Vuex.Store( {
           state.searchId.splice( 0 );
         }
         
-        for (const [key, node] of state.nodes) {
-          if (node.hasOwnProperty( 'name' ) && node.name.get().toLowerCase().includes( text.toLowerCase() )) {
-            state.searchId.push( key );
+        for (const key in state.nodes) {
+          if (state.nodes.hasOwnProperty(key)) {
+            const node = state.nodes[key];
+            if ( node.hasOwnProperty( 'name' )
+              && node.name.get()
+                .toLowerCase()
+                .includes(text.toLowerCase() )) {
+              state.searchId.push( key );
+            }
           }
         }
       },
@@ -232,10 +238,8 @@ let store = new Vuex.Store( {
       pullChildren( context, id ) {
         SpinalGraphService.getChildren( id, [] ).then(
           ( children ) => {
-            console.log( 'store pull children:  ', children );
             for (let i = 0; i < children.length; i++) {
               for (let j = 0; j < children[i]['childrenIds'].length; j++) {
-                console.log( 'child ', children );
                 context.dispatch( 'pullChildren', children[i]['childrenIds'][j] );
               }
             }
