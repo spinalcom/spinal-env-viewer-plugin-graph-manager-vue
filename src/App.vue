@@ -197,8 +197,41 @@
     }
 
     .graph-manager-side-bar {
+        overflow-y: auto;
+        overflow-x: hidden;
         background-color: rgba(52, 52, 52, 0.85);
         border-bottom: 1px solid rgba(128, 128, 128, 0.64);
+
+    }
+
+    .graph-manager-side-bar::-webkit-scrollbar {
+        width: 2px;
+        -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+        background-color: #121212;
+    }
+
+    .graph-manager-side-bar::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    }
+    .graph-manager-side-bar::-webkit-scrollbar-thumb {
+        outline: 1px solid slategrey;
+        background-color: #737374;
+    }
+
+
+
+    .graph-viewer::-webkit-scrollbar {
+        width: 4px;
+        -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+        background-color: #121212;
+    }
+
+    .graph-viewer::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    }
+    .graph-viewer::-webkit-scrollbar-thumb {
+        outline: 1px solid slategrey;
+        background-color: #737374;
     }
 
     .plugin-graph-viewer-refresh {
@@ -213,8 +246,9 @@
 
     .graph-manager-body {
         display: flex;
-        height: 100%;
+        height: calc(100% - 42px);
         width: 100%;
+
     }
 
 
