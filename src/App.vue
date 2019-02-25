@@ -55,7 +55,7 @@
 
         </div>
 
-        <div class="graph-manager-body">
+        <div class="graph-manager-body" :class="{v6: isV6}">
 
             <side-bar class="graph-manager-side-bar"
                       :buttons="sideBarButton"
@@ -129,7 +129,12 @@
         'nodes'
       ] ),
       mapGetters( ['arrayNode', 'getChildrenId', 'hasChildInContext'] ),
-      {}
+      {
+        isV6: function(){
+          return LMV_VIEWER_VERSION.includes('6')
+        },
+
+      }
     ),
     methods: {
       onNodeSelected: function ( event ) {
@@ -149,6 +154,7 @@
       refresh: function () {
         this.$store.commit( 'REFRESH' )
       },
+
     },
     watch: {
       'searchText': {
@@ -248,8 +254,9 @@
         display: flex;
         height: calc(100% - 42px);
         width: 100%;
-
     }
-
+    .v6{
+        height: calc(100% - 59px);
+    }
 
 </style>
