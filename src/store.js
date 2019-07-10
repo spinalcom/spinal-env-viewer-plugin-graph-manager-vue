@@ -23,7 +23,6 @@
  */
 
 import Vue from 'vue';
-import VueMaterial from 'vue-material';
 import Vuex from "vuex";
 import { spinalContextMenuService } from "spinal-env-viewer-context-menu-service";
 import {
@@ -34,7 +33,6 @@ import { SpinalGraphService } from "spinal-env-viewer-graph-service";
 
 Vue.config.productionTip = false;
 
-Vue.use( VueMaterial );
 Vue.use( Vuex );
 
 function initialState() {
@@ -238,11 +236,6 @@ let store = new Vuex.Store( {
       pullChildren( context, id ) {
         SpinalGraphService.getChildren( id, [] ).then(
           ( children ) => {
-            for (let i = 0; i < children.length; i++) {
-              for (let j = 0; j < children[i]['childrenIds'].length; j++) {
-                context.dispatch( 'pullChildren', children[i]['childrenIds'][j] );
-              }
-            }
             context.commit( 'ADD_NODES', children );
           }
         );
