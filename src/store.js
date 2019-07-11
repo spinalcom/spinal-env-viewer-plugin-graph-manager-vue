@@ -207,7 +207,7 @@ let store = new Vuex.Store( {
     
     actions: {
       getNode( context, event ) {
-        SpinalGraphService.findNode( event ).then(
+        return SpinalGraphService.findNode( event ).then(
           node => context.commit( 'ADD_NODE', node )
         ).catch( e => console.error( e ) );
       },
@@ -216,7 +216,7 @@ let store = new Vuex.Store( {
         option[OPTION_SELECTED_NODE_INFO] = context.state.nodes[event.nodeId];
         option[OPTION_CONTEXT_INFO] = context.state.nodes[event.contextId];
         context.commit( "SET_ACTIVE_NODE", event.nodeId );
-        spinalContextMenuService
+        return spinalContextMenuService
           .getApps( "GraphManagerSideBar", option )
           .then( buttons => {
             context.commit( "SET_SIDE_BAR", buttons );
@@ -227,7 +227,7 @@ let store = new Vuex.Store( {
           } );
       },
       retrieveGlobalBar( context, option ) {
-        spinalContextMenuService.getApps( "GraphManagerTopBar", option )
+       return spinalContextMenuService.getApps( "GraphManagerTopBar", option )
           .then( buttons => {
             context.commit( "SET_GLOBAL_BAR", buttons );
           } )
@@ -236,7 +236,7 @@ let store = new Vuex.Store( {
           } );
       },
       pullChildren( context, id ) {
-        SpinalGraphService.getChildren( id, [] ).then(
+        return SpinalGraphService.getChildren( id, [] ).then(
           ( children ) => {
             for (let i = 0; i < children.length; i++) {
               for (let j = 0; j < children[i]['childrenIds'].length; j++) {
