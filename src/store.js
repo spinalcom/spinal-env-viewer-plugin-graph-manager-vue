@@ -86,6 +86,35 @@ let store = new Vuex.Store( {
           }
         }
       },
+      UPDATE_CONTEXTS: (state, contexts) => {
+        for (const context of contexts) {
+          const contextId = context.id.get();
+          const contextName = context.name.get();
+          if (!state.nodes.hasOwnProperty(contextId)) {
+            state.nodes[contextId] = context;
+          }
+          if (!state.contextsId.includes(contextId)) {
+            if (window.spinal.SHOW_HIDDEN_NODES === true) {
+              state.contextsId.push(contextId);
+            } else if (contextName.startsWith('.') || contextName.startsWith('BIMObjectContext')) {
+              continue;
+            } else {
+              state.contextsId.push(contextId);
+            }
+          }
+        }
+        const toRms = state.contextsId.reduce((acc, contextId) => {
+          if (contexts.some((cont) => {
+            return cont.id.get() === contextId;
+          }) === false) {
+            acc.push(contextId);
+          }
+          return acc;
+        }, []);
+        for (const toRm of toRms) {
+          state.contextsId.splice(state.contextsId.indexOf(toRm), 1);
+        }
+      },
       ADD_NODE: ( state, node ) => {
         if (typeof node !== "undefined" && !state.nodes.hasOwnProperty( node.id.get() )) {
           state.nodes[node.id.get()] = node;
